@@ -25,8 +25,7 @@ WhiteListedCIDRRange = [ "23.34.45.56/67" ] #Please add cidr ranges
 
 app_service = [
     {
-        #service_plan = { size = "P2v3"}
-        service_plan = { size = "S1"}
+        service_plan = { size = "P2v3"}
         scaling_plan = {
             cpu = { max = 80, min = 30 },
             mem = { max = 80, min = 30 }

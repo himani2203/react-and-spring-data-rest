@@ -1,8 +1,8 @@
 terraform {
   backend "azurerm" {
-    key = "dva2-npdev000.tfstate"
-    resource_group_name  = "rgrp-dva2-np-hub000"
-    storage_account_name = "saccdva2npdev000"
+    key = "<key-name>.tfstate"
+    resource_group_name  = "StorageAccount-ResourceGroup"
+    storage_account_name = "storageaccountname"
     container_name       = "terraform-state"
   }
 
@@ -20,7 +20,6 @@ terraform {
 
   }
  
-  #required_version = ">= 1.3.0, <=1.3.9"
 }
 
 provider "azuread" {

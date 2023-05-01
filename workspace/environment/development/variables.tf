@@ -18,10 +18,6 @@ variable "WhiteListedCIDRRange" {
   type = list(string)
 }
 
-# variable "image" {
-#   type = string
-# }
-
 variable "app_service" {
     type = list(object({
         service_plan = object({

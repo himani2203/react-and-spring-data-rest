@@ -1,22 +1,3 @@
-resource "azurerm_resource_group" "resource_group_1" {
-  name     = format("rgrp-%s%d", local.name, 1)
-
-  location = "eastus"
-  tags = local.resource_tags
-}
-
-resource "azurerm_management_lock" "subscription-level-1" {
-  name       = format("rgrp-%s-lock%d", local.name, 1)
-  scope      = azurerm_resource_group.resource_group_1.id
-
-  lock_level = "CanNotDelete"
-  notes      = "Resource Group Is Locked"
-
-  lifecycle {
-    ignore_changes = [notes]
-  }
-}
-
 module "app-service" {
   count = length(var.app_service)
   source = "../../modules/app-service"
@@ -28,8 +9,7 @@ module "app-service" {
   service_plan = {
     kind = "Linux", per_site_scaling = true
     sku = {
-      tier = "Standard"
-      #tier = "PremiumV2"
+      tier = "PremiumV3"
       size = var.app_service[count.index].service_plan.size
     }
   }
@@ -47,7 +27,7 @@ module "app-service" {
 
   container_registry = azurerm_container_registry.acr
 
-  resource_group = azurerm_resource_group.resource_group_1
+  resource_group = azurerm_resource_group.resource_group
   tags = local.resource_tags
 }
 
