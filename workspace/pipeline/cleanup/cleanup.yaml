@@ -1,0 +1,62 @@
+trigger: none
+
+parameters:
+- name: resourcegroup
+  type: string
+  values:
+    - rgrp-dva2-np-dev000
+    - rgrp-dva2-np-dev0001
+ #   - rgrp-qva2-np-qa000   #if created new resourcegroup under NonProd
+    - rgrp-pva2-pn-prd000  #if created new resourcegroup Prod
+  default: rgrp-dva2-np-dev0001
+  displayName: 'ResourceGroup'
+
+variables:
+- ${{ if contains(parameters.resourcegroup, 'rgrp-dva2-np-dev000')}}:
+  - group: Terraform_NonProd
+
+- ${{ if contains(parameters.resourcegroup, 'rgrp-dva2-np-dev0001')}}:
+  - group: Terraform_NonProd
+
+- ${{ if contains(parameters.resourcegroup, 'rgrp-pva2-pn-prd000')}}:
+  - group: Terraform_Prod
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Delete_Resource_group
+    displayName: 'Delete Resource Group ${{ parameters.resourcegroup }}'
+
+    jobs:
+    - deployment: Resource_Group_Deletion_Approval
+      displayName: 'Resource Group Deletion Approval'
+      environment: $(environment)  #create environment with approvals to review pipeline before deletion
+
+
+    - job: Delete_Resource_group
+      displayName: 'Delete Resource Group ${{ parameters.resourcegroup }} Post Approval'
+      steps:
+        - task: AzurePowerShell@5
+          displayName: 'Delete Resource Group ${{ parameters.resourcegroup }}'
+          inputs:
+            azureSubscription: 'Service_Connection_NonProd'
+            ScriptType: 'FilePath'
+            ScriptPath: '$(System.DefaultWorkingDirectory)/workspace/pipeline/cleanup/script/DeleteResourceGroup.ps1'
+            ScriptArguments: '-ClientSecret "$(client_secret)" -ClientId "$(client_id)" -TenantId "$(tenant_id)" -SubscriptionId "$(subscription_id)" -ResourceGroupName "${{ parameters.resourcegroup }}"'
+            FailOnStandardError: true
+            azurePowerShellVersion: 'LatestVersion'
+        # - task: PowerShell@2
+        #   displayName: 'Delete Resource Group ${{ parameters.resourcegroup }}'
+        #   inputs:
+        #     filePath: '$(System.DefaultWorkingDirectory)/workspace/pipeline/cleanup/script/DeleteResourceGroup.ps1'
+        #     arguments: >
+        #       -ClientSecret "$(client_secret)"
+        #       -ClientId "$(client_id)"
+        #       -TenantId "$(tenant_id)"
+        #       -SubscriptionId "$(subscription_id)"
+        #       -ResourceGroupName "${{ parameters.resourcegroup }}"
+        
+
+    
+      

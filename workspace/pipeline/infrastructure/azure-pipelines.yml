@@ -1,0 +1,53 @@
+trigger:
+- none
+
+pool:
+  #name: pool_name  #make sure this pool have access to backend storage where we have tfstate file
+  vmImage: 'ubuntu-latest'
+
+resources:
+  repositories:
+    - repository: Build-Deploy
+      type: git
+      name: Build-Deploy
+    
+parameters:
+  - name: environment
+    type: object
+    default:
+      - env: development
+      - env: uat
+      - env: production
+
+stages:
+  - ${{ each environment in parameters.environment }}:
+    - ${{ if eq(environment.env, 'development') }}:
+      - template: workspace/pipeline/infrastructure/build.yaml@Build-Deploy
+      
+        parameters:
+          environment: ${{ environment.env }}
+          workingDirectory: workspace/environment/${{ environment.env }}
+          backendServiceArm: 'Service_Connection_${{ environment.env }}'
+          backendResourceGroupName: 'rgrp-dva2-np-hub000'
+          backendStorageAccountName: 'saccdva2npdev000'
+          backendKey: 'dva2-npdev000.tfstate'
+                
+    - ${{ if eq(environment.env, 'uat') }}:
+      - template: workspace/pipeline/infrastructure/build.yaml@Build-Deploy
+        parameters:
+          environment: ${{ environment.env }}
+          workingDirectory: workspace/environment/${{ environment.env }}
+          backendServiceArm: 'Service_Connection_${{ environment.env }}'
+          backendResourceGroupName: 'rgrp-uva2-pp-hub000'
+          backendStorageAccountName: 'saccuva2ppuat000'
+          backendKey: 'uva2-ppuat000.tfstate'
+
+    - ${{ if eq(environment.env, 'production') }}:
+      - template: workspace/pipeline/infrastructure/build.yaml@Build-Deploy
+        parameters:
+          environment: ${{ environment.env }}
+          workingDirectory: workspace/environment/${{ environment.env }}
+          backendServiceArm: 'Service_Connection_${{ environment.env }}'
+          backendResourceGroupName: 'rgrp-pva2-pn-hub000'
+          backendStorageAccountName: 'saccpva2pnprod000'
+          backendKey: 'pva2-pnprod000.tfstate'

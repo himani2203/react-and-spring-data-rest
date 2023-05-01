@@ -1,0 +1,65 @@
+parameters:
+  environment: ''
+  workingDirectory: ''
+  backendServiceArm: ''
+  backendResourceGroupName: ''
+  backendStorageAccountName: ''
+  backendKey: ''
+
+stages:
+- stage: Verify_Validate_${{ parameters.environment }}_IAC_Code
+  displayName: 'Verify and Validate ${{ parameters.environment }} IAC Code'
+  jobs:
+    - job: Infrastructure_Verify_Validate
+      displayName: Infrastructure_Verify_Validate
+      steps:
+        - task: TerraformInstaller@1
+          displayName: 'Install Terraform'
+          inputs:
+            terraformVersion: 'v1.3.2'
+        
+        - task : TerraformTaskV4@4
+          displayName: 'Terraform Init'
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
+            backendServiceArm: ${{ parameters.backendServiceArm }} #please create Azure Resource Manager service connection from Azure Devops 
+            backendAzureRmResourceGroupName: ${{ parameters.backendResourceGroupName }}
+            backendAzureRmStorageAccountName: ${{ parameters.backendStorageAccountName }}
+            backendAzureRmContainerName: 'terraform-state'
+            backendAzureRmKey: ${{ parameters.backendKey }}
+
+        - task : TerraformTaskV4@4
+          displayName: 'Terraform Validate'
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+
+        - task : TerraformTaskV4@4
+          displayName: 'Terraform Plan'
+          condition: succeeded()
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
+            environmentServiceNameAzureRM: ${{ parameters.backendServiceArm }}
+
+- stage: Deploy_Infrastructure_on_${{ parameters.environment }}
+  displayName: 'Deploy Infrastructure on ${{ parameters.environment }}'
+  condition: succeeded('Verify_Validate_${{ parameters.environment }}_IAC_Code')
+  jobs:
+    - deployment: Deploy_Infrastructure
+      displayName: Deploy Infrastructure on ${{ parameters.environment }}
+      environment: ${{ parameters.environment }}  #create environment with approval
+      strategy: 
+        runOnce:
+          deploy:
+            steps:
+              - task : TerraformTaskV4@4
+                displayName: 'Terraform Apply'
+                inputs:
+                  provider: 'azurerm'
+                  command: 'apply'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
+                  environmentServiceNameAzureRM: ${{ parameters.backendServiceArm }}

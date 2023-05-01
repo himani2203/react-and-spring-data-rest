@@ -1,0 +1,87 @@
+trigger:
+- none
+
+pool:
+  #name: pool_name  #make sure this pool have access to backend storage where we have tfstate file
+  vmImage: 'ubuntu-latest'
+
+parameters:
+  - name: environment
+    type: string
+    default: development
+    values:
+      - development
+      - production
+
+stages:
+- stage: Verify_Validate_${{ parameters.environment }}_IAC_Code
+  displayName: 'Verify and Validate ${{ parameters.environment }} IAC Code'
+  jobs:
+    - job: Infrastructure_Verify_Validate
+      pool:
+        vmImage: 'ubuntu-latest'
+      displayName: Infrastructure_Verify_Validate
+      steps:
+        - bash: |
+            echo "##vso[task.setvariable variable=AgentName;isoutput=true]$(Agent.Name)"
+          name: passOutput
+        - task: TerraformInstaller@1
+          displayName: 'Install Terraform'
+          inputs:
+            terraformVersion: 'v1.3.2'   
+        
+        - task : TerraformTaskV4@4 
+          displayName: 'Terraform Init'
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
+            backendServiceArm: 'Service_Connection_NonProd' #please create this from Azure Devops using Azure Resource Manager
+            # backendAzureRmResourceGroupName: 'StorageAccount-ResourceGroup'
+            # backendAzureRmStorageAccountName: 'storageaccountname'
+            backendAzureRmResourceGroupName: 'rgrp-dva2-np-hub000'
+            backendAzureRmStorageAccountName: 'saccdva2npdev000'
+            backendAzureRmContainerName: 'terraform-state'
+            backendAzureRmKey: 'dva2-npdev000.tfstate'
+
+        - task : TerraformTaskV4@4
+          displayName: 'Terraform Validate'
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+
+        - task : TerraformTaskV4@4
+          displayName: 'Terraform Plan'
+          condition: succeeded()
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
+            environmentServiceNameAzureRM: 'Service_Connection_NonProd'
+
+- stage: Deploy_Infrastructure_on_${{ parameters.environment }}
+  displayName: 'Deploy Infrastructure on ${{ parameters.environment }}'
+  condition: succeeded('Verify_Validate_${{ parameters.environment }}_IAC_Code')
+  jobs:
+    - deployment: Deploy_Infrastructure
+      
+      pool:
+        vmImage: 'ubuntu-latest'
+        demands: Agent.Name -equals $(AgentName) 
+      variables:
+        AgentName: $[ dependencies.Infrastructure_Verify_Validate.outputs['passOutput.AgentName'] ]
+      displayName: Deploy Infrastructure on ${{ parameters.environment }}
+      environment: ${{ parameters.environment }}  #create environment with approval
+      strategy: 
+        runOnce:
+          deploy:
+            steps:
+              - bash: |
+                  echo $(AgentName)
+              - task : TerraformTaskV4@4
+                displayName: 'Terraform Apply'
+                inputs:
+                  provider: 'azurerm'
+                  command: 'apply'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
+                  environmentServiceNameAzureRM: 'Service_Connection_NonProd'
