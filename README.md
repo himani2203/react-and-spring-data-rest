@@ -18,7 +18,7 @@
      - *Application.java*
 
 2. While building the solution notice Employee class was missing default constructor.
-3. Configure the Apps Insight instrumentation key in application.properties file and added dependency in    pom.xml
+3. Configured the Apps Insight instrumentation key in application.properties file and added dependency in pom.xml
 4. Tried to implement Azure SQL connection for real database from cloud.
 
 
@@ -30,8 +30,6 @@
    ![CreateRecords](src/main/resources/images/ReactJS-Spring-Data-REST.png)
 ##### 3. View Employee
    ![ViewEmployeeRecords](src/main/resources/images/ReactJS-Spring-Data-REST1.png)
-
-
 ## Pre-Requisite to build the project:
 
 1. Create a new Azure Repo from Azure Devops and push the code (https://github.com/himani2203/react-and-spring-data-rest)
@@ -41,7 +39,6 @@
 3. Create Service Principal to run Terraform locally and from pipelines in Azure DevOps with Contributor access to Subscription. https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret#creating-a-service-principal-in-the-azure-portal
 
 4.  Make sure you have different Subscriptions across Environments (Dev/UAT/Prod) with their respective Service principals, ACRs, Service Connection etc.
-
 
 ## Configuring the Solution
 
