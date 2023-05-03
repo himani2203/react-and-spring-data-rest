@@ -1,29 +1,11 @@
 # react-and-spring-data-rest
 
-The application has a react frontend and a Spring Boot Rest API, packaged as a single module Maven application.
+### Pre-Requisite to build the project:
 
-You can build the application running (`./mvnw clean verify`), that will generate a Spring Boot flat JAR in the target folder.
+1) Created the Azure Repo from Azure Devops and push the code (react-and-spring-data-rest.zip)
+2) Since i am using Terraform here to build my Infrastructure, Make sure you have a storage account and a blob container to store tf state files (Separate RG itself so that later when we cleanup our code, our state file should not be impacted and maintain Desired state).
+3) Create Service Principal to run Terraform locally and from pipelines in Azure DevOps with Contributor access to Subscription.
+https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret#creating-a-service-principal-in-the-azure-portal
+4) Make sure you have different Subscriptions across Environments (Dev/UAT/Prod) with respective Service principals, ACRs, Service Connection etc.
 
-To start the application you can just run (`java -jar target/react-and-spring-data-rest-*.jar`), then you can call the API by using the following curl (shown with its output):
 
----
-
-\$ curl -v -u greg:turnquist localhost:8080/api/employees/1
-{
-"firstName" : "Frodo",
-"lastName" : "Baggins",
-"description" : "ring bearer",
-"manager" : {
-"name" : "greg",
-"roles" : [ "ROLE_MANAGER" ]
-},
-"\_links" : {
-"self" : {
-"href" : "http://localhost:8080/api/employees/1"
-}
-}
-}
-
----
-
-To see the frontend, navigate to http://localhost:8080. You are immediately redirected to a login form. Log in as `greg/turnquist`
