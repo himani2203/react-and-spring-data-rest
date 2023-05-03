@@ -28,8 +28,8 @@ stages:
           environment: ${{ environment.env }}
           workingDirectory: workspace/environment/${{ environment.env }}
           backendServiceArm: 'Service_Connection_${{ environment.env }}'
-          backendResourceGroupName: 'rgrp-dva2-np-hub000'
-          backendStorageAccountName: 'saccdva2npdev000'
+          backendResourceGroupName: 'Dev-StorageResourceGroupName'
+          backendStorageAccountName: 'Dev-StorageAccountName'
           backendKey: 'dva2-npdev000.tfstate'
                 
     - ${{ if eq(environment.env, 'uat') }}:
@@ -38,8 +38,8 @@ stages:
           environment: ${{ environment.env }}
           workingDirectory: workspace/environment/${{ environment.env }}
           backendServiceArm: 'Service_Connection_${{ environment.env }}'
-          backendResourceGroupName: 'rgrp-uva2-pp-hub000'
-          backendStorageAccountName: 'saccuva2ppuat000'
+          backendResourceGroupName: 'Uat-StorageResourceGroupName'
+          backendStorageAccountName: 'Uat-StorageAccountName'
           backendKey: 'uva2-ppuat000.tfstate'
 
     - ${{ if eq(environment.env, 'production') }}:
@@ -48,6 +48,6 @@ stages:
           environment: ${{ environment.env }}
           workingDirectory: workspace/environment/${{ environment.env }}
           backendServiceArm: 'Service_Connection_${{ environment.env }}'
-          backendResourceGroupName: 'rgrp-pva2-pn-hub000'
-          backendStorageAccountName: 'saccpva2pnprod000'
+          backendResourceGroupName: 'Prod-StorageResourceGroupName'
+          backendStorageAccountName: 'Prod-StorageAccountName'
           backendKey: 'pva2-pnprod000.tfstate'

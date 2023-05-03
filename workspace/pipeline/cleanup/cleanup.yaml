@@ -5,18 +5,17 @@ parameters:
   type: string
   values:
     - rgrp-dva2-np-dev000
-    - rgrp-dva2-np-dev0001
- #   - rgrp-qva2-np-qa000   #if created new resourcegroup under NonProd
-    - rgrp-pva2-pn-prd000  #if created new resourcegroup Prod
-  default: rgrp-dva2-np-dev0001
+    - rgrp-uva2-pp-uat000   #if created new resourcegroup under Uat Subscription
+    - rgrp-pva2-pn-prd000  #if created new resourcegroup Prod Subscription
+  default: rgrp-dva2-np-dev000
   displayName: 'ResourceGroup'
 
 variables:
 - ${{ if contains(parameters.resourcegroup, 'rgrp-dva2-np-dev000')}}:
   - group: Terraform_NonProd
 
-- ${{ if contains(parameters.resourcegroup, 'rgrp-dva2-np-dev0001')}}:
-  - group: Terraform_NonProd
+- ${{ if contains(parameters.resourcegroup, 'rgrp-uva2-pp-uat000')}}:
+  - group: Terraform_Uat
 
 - ${{ if contains(parameters.resourcegroup, 'rgrp-pva2-pn-prd000')}}:
   - group: Terraform_Prod
