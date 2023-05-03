@@ -43,7 +43,7 @@ steps:
     command: 'build'
     containerRegistry: 'DOCKER_ACR_PUSH_${{ parameters.environment }}' # Make sure you have service connection across environments
     repository: 'springboot'
-    Dockerfile: '$(System.DefaultWorkingDirectory)/backend/Dockerfile'
+    Dockerfile: '$(System.DefaultWorkingDirectory)/Dockerfile-backend'
     tags: '000'
 
 - task: Docker@2
