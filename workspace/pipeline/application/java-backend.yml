@@ -9,31 +9,47 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+parameters:
+- name: environment
+  type: string
+  values:
+    - Development
+    - Uat
+    - Production
+  default: Development
+  displayName: 'Environment'
+
 steps:
-- task: Maven@3
+
+- task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    jdkArchitectureOption: 'x64'
+    goals: 'clean install'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'clean install'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    checkStyleRunAnalysis: true
+    pmdRunAnalysis: true
+    findBugsRunAnalysis: true
+    spotBugsRunAnalysis: true
 
 - task: Docker@2
+  condition: succeeded()
   displayName: 'Docker Build'
   inputs:
     command: 'build'
-    containerRegistry: 'DOCKER_ACR_PUSH'
+    containerRegistry: 'DOCKER_ACR_PUSH_${{ parameters.environment }}' # Make sure you have service connection across environments
     repository: 'springboot'
-    Dockerfile: '$(System.DefaultWorkingDirectory)/Dockerfile'
-    tags: 'np000'
+    Dockerfile: '$(System.DefaultWorkingDirectory)/backend/Dockerfile'
+    tags: '000'
 
 - task: Docker@2
   displayName: 'Docker Push'
   inputs:
-    containerRegistry: 'DOCKER_ACR_PUSH'
+    containerRegistry: 'DOCKER_ACR_PUSH_${{ parameters.environment }}'
     repository: 'springboot'
     command: 'push'
-    tags: 'np000'
+    tags: '000'

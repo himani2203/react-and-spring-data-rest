@@ -40,22 +40,12 @@ stages:
         - task: AzurePowerShell@5
           displayName: 'Delete Resource Group ${{ parameters.resourcegroup }}'
           inputs:
-            azureSubscription: 'Service_Connection_NonProd'
+            azureSubscription: 'Service_Connection_$(environment)'
             ScriptType: 'FilePath'
             ScriptPath: '$(System.DefaultWorkingDirectory)/workspace/pipeline/cleanup/script/DeleteResourceGroup.ps1'
             ScriptArguments: '-ClientSecret "$(client_secret)" -ClientId "$(client_id)" -TenantId "$(tenant_id)" -SubscriptionId "$(subscription_id)" -ResourceGroupName "${{ parameters.resourcegroup }}"'
             FailOnStandardError: true
             azurePowerShellVersion: 'LatestVersion'
-        # - task: PowerShell@2
-        #   displayName: 'Delete Resource Group ${{ parameters.resourcegroup }}'
-        #   inputs:
-        #     filePath: '$(System.DefaultWorkingDirectory)/workspace/pipeline/cleanup/script/DeleteResourceGroup.ps1'
-        #     arguments: >
-        #       -ClientSecret "$(client_secret)"
-        #       -ClientId "$(client_id)"
-        #       -TenantId "$(tenant_id)"
-        #       -SubscriptionId "$(subscription_id)"
-        #       -ResourceGroupName "${{ parameters.resourcegroup }}"
         
 
     

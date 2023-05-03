@@ -7,9 +7,9 @@ pool:
 
 resources:
   repositories:
-    - repository: repo-name
+    - repository: Build-Deploy
       type: git
-      name: repo-name
+      name: Build-Deploy
     
 parameters:
   - name: environment
@@ -22,32 +22,32 @@ parameters:
 stages:
   - ${{ each environment in parameters.environment }}:
     - ${{ if eq(environment.env, 'development') }}:
-      - template: workspace/pipeline/infrastructure/build.yaml@repo-name
+      - template: workspace/pipeline/infrastructure/build.yaml@Build-Deploy
       
         parameters:
           environment: ${{ environment.env }}
           workingDirectory: workspace/environment/${{ environment.env }}
           backendServiceArm: 'Service_Connection_${{ environment.env }}'
-          backendResourceGroupName: 'StorageAccount-ResourceGroup'
-          backendStorageAccountName: 'storageaccountname'
-          backendKey: '<key-name>.tfstate'
+          backendResourceGroupName: 'rgrp-dva2-np-hub000'
+          backendStorageAccountName: 'saccdva2npdev000'
+          backendKey: 'dva2-npdev000.tfstate'
                 
     - ${{ if eq(environment.env, 'uat') }}:
-      - template: workspace/pipeline/infrastructure/build.yaml@repo-name
+      - template: workspace/pipeline/infrastructure/build.yaml@Build-Deploy
         parameters:
           environment: ${{ environment.env }}
           workingDirectory: workspace/environment/${{ environment.env }}
           backendServiceArm: 'Service_Connection_${{ environment.env }}'
-          backendResourceGroupName: 'StorageAccount-ResourceGroup'
-          backendStorageAccountName: 'storageaccountname'
-          backendKey: '<key-name>.tfstate'
+          backendResourceGroupName: 'rgrp-uva2-pp-hub000'
+          backendStorageAccountName: 'saccuva2ppuat000'
+          backendKey: 'uva2-ppuat000.tfstate'
 
     - ${{ if eq(environment.env, 'production') }}:
-      - template: workspace/pipeline/infrastructure/build.yaml@repo-name
+      - template: workspace/pipeline/infrastructure/build.yaml@Build-Deploy
         parameters:
           environment: ${{ environment.env }}
           workingDirectory: workspace/environment/${{ environment.env }}
           backendServiceArm: 'Service_Connection_${{ environment.env }}'
-          backendResourceGroupName: 'StorageAccount-ResourceGroup'
-          backendStorageAccountName: 'storageaccountname'
-          backendKey: '<key-name>.tfstate'
+          backendResourceGroupName: 'rgrp-pva2-pn-hub000'
+          backendStorageAccountName: 'saccpva2pnprod000'
+          backendKey: 'pva2-pnprod000.tfstate'

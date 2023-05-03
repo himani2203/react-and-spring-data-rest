@@ -6,11 +6,18 @@
 trigger:
 - none
 
-variables:
-  uiSource: 'src'
-
 pool:
   vmImage: ubuntu-latest
+
+parameters:
+- name: environment
+  type: string
+  values:
+    - Development
+    - Uat
+    - Production
+  default: Development
+  displayName: 'Environment'
 
 steps:
 - task: NodeTool@0
@@ -18,23 +25,33 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- script: |
-    pushd $(uiSource)
-    npm install
-    npm run build
-    popd
-  displayName: 'npm install and build'
-
-- task: ArchiveFiles@2
+- task: Npm@1
+  displayName: 'Build frontend'
   inputs:
-    rootFolderOrFile: 'node_modules'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/node_modules/$(Build.BuildId).zip'
-    replaceExistingArchive: true
+    command: 'custom'
+    customCommand: 'react-scripts build'
 
-- task: PublishBuildArtifacts@1
+# - task: Npm@1
+#   displayName: 'Build frontend'
+#   inputs:
+#     command: 'run'
+#     workingDir: $(System.DefaultWorkingDirectory)
+#     arguments: 'build'
+
+- task: Docker@2
+  condition: succeeded()
+  displayName: 'Docker Build'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/node_modules/$(Build.BuildId).zip'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    command: 'build'
+    containerRegistry: 'DOCKER_ACR_PUSH_${{ parameters.environment }}' # Make sure you have service connection across environments
+    repository: 'react'
+    Dockerfile: '$(System.DefaultWorkingDirectory)/frontend/Dockerfile'
+    tags: '000'
+
+- task: Docker@2
+  displayName: 'Docker Push'
+  inputs:
+    containerRegistry: 'DOCKER_ACR_PUSH_${{ parameters.environment }}'
+    repository: 'react'
+    command: 'push'
+    tags: '000'

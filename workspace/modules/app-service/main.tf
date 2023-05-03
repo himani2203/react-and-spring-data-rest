@@ -36,3 +36,14 @@ module "scaling_plan" {
 
   tags = var.tags
 }
+
+locals {
+  default_app_settings = merge(
+    var.app_insights == null ? {} : {
+      APPLICATION_INSIGHTS_IKEY = try(var.app_insights.instrumentation_key, "")
+      APPINSIGHTS_INSTRUMENTATIONKEY =  try(var.app_insights.instrumentation_key, "")
+      APPLICATIONINSIGHTS_CONNECTION_STRING = try(var.app_insights.connection_string, "")
+      ApplicationInsightsAgents_EXTENSION_VERSION = "~2"
+    }
+  )
+}

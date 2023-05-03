@@ -7,7 +7,7 @@ parameters:
   backendKey: ''
 
 stages:
-- stage: Verify_Validate_${{ parameters.environment }}_IAC_Code
+- stage: Verify_Validate_Plan_Deploy_${{ parameters.environment }}_IAC_Code
   displayName: 'Verify and Validate ${{ parameters.environment }} IAC Code'
   jobs:
     - job: Infrastructure_Verify_Validate
@@ -45,11 +45,9 @@ stages:
             workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
             environmentServiceNameAzureRM: ${{ parameters.backendServiceArm }}
 
-- stage: Deploy_Infrastructure_on_${{ parameters.environment }}
-  displayName: 'Deploy Infrastructure on ${{ parameters.environment }}'
-  condition: succeeded('Verify_Validate_${{ parameters.environment }}_IAC_Code')
-  jobs:
     - deployment: Deploy_Infrastructure
+      dependsOn: 'Infrastructure_Verify_Validate'
+      condition: succeeded('Infrastructure_Verify_Validate')
       displayName: Deploy Infrastructure on ${{ parameters.environment }}
       environment: ${{ parameters.environment }}  #create environment with approval
       strategy: 
@@ -63,3 +61,22 @@ stages:
                   command: 'apply'
                   workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
                   environmentServiceNameAzureRM: ${{ parameters.backendServiceArm }}
+
+# - stage: Deploy_Infrastructure_on_${{ parameters.environment }}
+#   displayName: 'Deploy Infrastructure on ${{ parameters.environment }}'
+#   condition: succeeded('Verify_Validate_${{ parameters.environment }}_IAC_Code')
+#   jobs:
+#     - deployment: Deploy_Infrastructure
+#       displayName: Deploy Infrastructure on ${{ parameters.environment }}
+#       environment: ${{ parameters.environment }}  #create environment with approval
+#       strategy: 
+#         runOnce:
+#           deploy:
+#             steps:
+#               - task : TerraformTaskV4@4
+#                 displayName: 'Terraform Apply'
+#                 inputs:
+#                   provider: 'azurerm'
+#                   command: 'apply'
+#                   workingDirectory: '$(System.DefaultWorkingDirectory)/workspace/environment/${{ parameters.environment }}'
+#                   environmentServiceNameAzureRM: ${{ parameters.backendServiceArm }}

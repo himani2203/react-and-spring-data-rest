@@ -1,5 +1,10 @@
 data "azurerm_client_config" "current" {}
 
+data "azurerm_storage_account" "storage" {
+  name                = "StorageAccountName"
+  resource_group_name = "StorageResourceGroupName"
+}
+
 locals {
   name = format("%s%s-%s%s", var.resource.naming.environment, var.resource.naming.region, var.environment.metadata.primary_key, var.environment.metadata.sequence)
   resource_tags = merge(var.resource.tags, {

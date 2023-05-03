@@ -32,6 +32,11 @@ variable "container_registry" {
     type = any
 }
 
+variable "app_insights" {
+    type = any
+    default = null
+}
+
 variable "enable_webhooks" {
     type = bool
     default = true
@@ -42,6 +47,11 @@ variable "scaling_plan" {
         cpu = object({ min=number, max=number }),
         mem = object({ min=number, max=number })
     })
+    default = null
+}
+
+variable "diagnostics" {
+    type = object({ storage_account_id = string, log_analytics_workspace_id = string })
     default = null
 }
 

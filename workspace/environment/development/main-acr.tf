@@ -20,7 +20,7 @@ resource "azurerm_container_registry" "acr" {
   }
 
   anonymous_pull_enabled = false
-  public_network_access_enabled = true
+  public_network_access_enabled = true   # For testing I am giving public access but not recommended for Production (make use of private endpoint)
   network_rule_bypass_option = "AzureServices"
 
   tags = local.resource_tags

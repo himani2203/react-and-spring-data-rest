@@ -11,8 +11,8 @@ resource "azurerm_container_registry_webhook" "webhook" {
   name                = replace(local.deployments[count.index]["name"], "-", "")
 
   registry_name       = var.container_registry.name
-  location            = "eastus2"
-  resource_group_name = "rgrp-dva2-np-dev000"
+  location            = var.resource_group.location
+  resource_group_name = var.resource_group.name
 
   status      = "enabled"
   actions     = ["push"]

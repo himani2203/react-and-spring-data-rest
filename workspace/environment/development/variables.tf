@@ -14,10 +14,6 @@ variable "environment" {
     })
 }
 
-variable "WhiteListedCIDRRange" {
-  type = list(string)
-}
-
 variable "app_service" {
     type = list(object({
         service_plan = object({

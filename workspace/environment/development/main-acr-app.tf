@@ -1,4 +1,4 @@
-#This Service Principal will be used for creating Service Connection using Docker regsitry in Azure DevOps
+#This Service Principal will be used for creating Service Connection using Docker regsitry(Build and Push Images to ACR) in Azure DevOps
 
 #Please note our Enterprise Application must have below API Persmission to create SP and assign roles else it will throw 403 (ApplicationsClient.BaseClient.Post(): unexpected status 403 with OData error: Authorization_RequestDenied:
 #│ Insufficient privileges to complete the operation.)

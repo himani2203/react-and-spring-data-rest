@@ -10,7 +10,7 @@ resource "azurerm_app_service" "app_service" {
     WEBSITES_PORT = var.application[count.index].port
     DOCKER_ENABLE_CI = "true"
     DOCKER_REGISTRY_SERVICE_URL = format("https://%s", var.container_registry.login_server)
-  }, var.application[count.index].app_settings)
+  }, local.default_app_settings, var.application[count.index].app_settings)
 
   dynamic "site_config" {
     for_each = [var.application[count.index].site_config]

@@ -9,12 +9,12 @@ module "app-service" {
   service_plan = {
     kind = "Linux", per_site_scaling = true
     sku = {
-      tier = "PremiumV3"
+      tier = "Standard"
       size = var.app_service[count.index].service_plan.size
     }
   }
 
-  enable_webhooks = true
+  enable_webhooks = true  # This is for continuous deployment
   application = [for i in range(length(var.app_service[count.index].container)) :
     {
       image = var.app_service[count.index].container[i].image,
@@ -26,8 +26,14 @@ module "app-service" {
   ]
 
   container_registry = azurerm_container_registry.acr
-
+  app_insights = azurerm_application_insights.app_insights
   resource_group = azurerm_resource_group.resource_group
+
+  diagnostics = {
+    storage_account_id = data.azurerm_storage_account.storage.id
+    log_analytics_workspace_id = azurerm_log_analytics_workspace.workspace.id
+  }
+  
   tags = local.resource_tags
 }
 
