@@ -29,7 +29,8 @@ app_service = [
             mem = { max = 80, min = 30 }
         }
         container = [
-            { image = "springboot:000", port = 8080 }
+            { image = "springboot:000", port = 8080 },
+            { image = "react:000" }
         ]
     }
 ]

@@ -31,13 +31,6 @@ steps:
     command: 'custom'
     customCommand: 'react-scripts build'
 
-# - task: Npm@1
-#   displayName: 'Build frontend'
-#   inputs:
-#     command: 'run'
-#     workingDir: $(System.DefaultWorkingDirectory)
-#     arguments: 'build'
-
 - task: Docker@2
   condition: succeeded()
   displayName: 'Docker Build'
