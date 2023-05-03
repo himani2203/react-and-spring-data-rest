@@ -43,8 +43,8 @@
 ## Configuring the Solution
 
 1. Build Application code base Image using Dockerfile for Frontend and Backend:
-    - Sprinboot (https://github.com/himani2203/react-and-spring-data-rest/tree/main/backend)
-    - React (https://github.com/himani2203/react-and-spring-data-rest/tree/main/frontend)
+    - Sprinboot (https://github.com/himani2203/react-and-spring-data-rest/blob/main/Dockerfile-backend)
+    - React (https://github.com/himani2203/react-and-spring-data-rest/blob/main/Dockerfile-frontend)
     - Application Pipelines to create (https://github.com/himani2203/react-and-spring-data-rest/tree/main/workspace/pipeline/application)
 
 2. Once we have image we are good to deploy Infrastructure Pipelines.
