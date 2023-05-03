@@ -3,8 +3,8 @@ resource "azurerm_mssql_server" "server" {
   resource_group_name          = azurerm_resource_group.resource_group.name
   location                     = azurerm_resource_group.resource_group.location
   version                      = "12.0"
-  administrator_login          = "adm1n4141"
-  administrator_login_password = "h1-m@n!-4141-p455w0rd"   # We can also store in key vault secret
+  administrator_login          = <login_username>
+  administrator_login_password = <login_password>   # We can also store in key vault secret
 
   tags = local.resource_tags
 
